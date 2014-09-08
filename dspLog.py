@@ -33,7 +33,11 @@ class DSPInterface(object):
 				power = line.split()[-1]
 				if retVal:
 					raise ValueError("Two power readings in one response?")
-				retVal = float(power)
+				try:
+					retVal = float(power)
+				except ValueError:
+					print("Error on string '%s'" % line)
+					return None
 
 		return retVal
 
