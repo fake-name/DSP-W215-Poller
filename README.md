@@ -10,5 +10,9 @@ All DSP-W215 related code is in `dspLog.py`. `EmonFeeder.py` is just the emoncms
 ------
 
 Note: While this does work, D-Link could very well break it at any time with a product update.
+
+
 Really, Just buy Ubiquiti mPower monitor/control plugs. They actually have their API documented (unofficially, but by actual Ubnt employees): https://community.ubnt.com/t5/mFi/mPower-mFi-Switch-and-mFi-In-Wall-Outlet-HTTP-API/td-p/1076449
+
+The hardware is similar cost, and the Ubiquiti hardware have a full-stack for on-premises monitoring/graphing. The standard is no cloud!
 
