@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 
-import EmonFeeder
 import time
 import urllib.parse
 import urllib.request
 import random
+import logging
+
+import EmonFeeder
 
 DSP_OUTLETS = [
 		# Add more outlets here. The first number is the node number sent to emoncms,
@@ -22,12 +24,13 @@ UPDATE_INTERVAL_SECONDS = 5
 class DSPInterface(object):
 	def __init__(self, plugIp):
 		self.ip = plugIp
+		self.log = logging.getLogger("Main.Plug-{}".format(self.ip))
+
 
 	def getReading(self):
-		pass
 
-		postData = {'request': 'create_chklst'}
-		postData = urllib.parse.urlencode(postData).encode("ascii")
+		postData_dict = {'request': 'create_chklst'}
+		postData = urllib.parse.urlencode(postData_dict).encode("ascii")
 
 		req = urllib.request.Request("http://{ip}/my_cgi.cgi?{rand}".format(ip=self.ip, rand=str(random.random())), data=postData)
 		response = urllib.request.urlopen(req)
@@ -45,9 +48,15 @@ class DSPInterface(object):
 				try:
 					retVal = float(power)
 				except ValueError:
-					print("Error on string '%s'" % line)
+					self.log.error("Error on string '%s'", line)
 					return None
 
+		if not retVal:
+			self.log.error("WARNING: Outlet API request returned no data!")
+			self.log.error("Request URL: '%s'", req)
+			self.log.error("Outlet response:")
+			self.log.error("%s", ret)
+			return None
 		return retVal
 
 
@@ -96,7 +105,9 @@ if __name__ == "__main__":
 
 					# I don't remember what this zero is here for.
 					monBuf.add_data([str(outletid), 0, powerReading])
-					monBuf.send_data()
+				else:
+					print("Outlet %s did not return data (%s)!" % (outletid, outlet))
+			monBuf.send_data()
 		except:
 			raise
 
