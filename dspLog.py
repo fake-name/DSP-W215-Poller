@@ -100,7 +100,7 @@ if __name__ == "__main__":
 			for outletid, outlet in outlets:
 				powerReading = outlet.getReading()
 
-				if powerReading:
+				if powerReading is not None:
 					print("Have data! Ready to send")
 
 					# I don't remember what this zero is here for.
