@@ -101,7 +101,7 @@ if __name__ == "__main__":
 				powerReading = outlet.getReading()
 
 				if powerReading is not None:
-					print("Have data! Ready to send")
+					print("Have data (%s watts)! Ready to send" % (powerReading))
 
 					# I don't remember what this zero is here for.
 					monBuf.add_data([str(outletid), 0, powerReading])
