@@ -4,6 +4,7 @@
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
 import random
 import logging
 
@@ -96,10 +97,9 @@ if __name__ == "__main__":
 
 	nextRun = time.time() + UPDATE_INTERVAL_SECONDS
 	while 1:
-		try:
-			for outletid, outlet in outlets:
+		for outletid, outlet in outlets:
+			try:
 				powerReading = outlet.getReading()
-
 				if powerReading is not None:
 					print("Have data (%s watts)! Ready to send" % (powerReading, ))
 
@@ -107,9 +107,15 @@ if __name__ == "__main__":
 					monBuf.add_data([str(outletid), 0, powerReading])
 				else:
 					print("Outlet %s did not return data (%s)!" % (outletid, outlet))
-			monBuf.send_data()
-		except:
-			raise
+
+			except urllib.error.URLError:
+				print("Failed to fetch data from plug: %s - %s!" % (outletid, outlet))
+			except OSError:
+				print("OSError when trying to fetch plug data! Plug: %s - %s!" % (outletid, outlet))
+			except KeyboardInterrupt:
+				raise
+		monBuf.send_data()
+
 
 		while time.time() < nextRun:
 			time.sleep(1)
